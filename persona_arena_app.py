@@ -301,7 +301,8 @@ def _load_gdrive_creds():
 
 # ── Routes ─────────────────────────────────────────────────────────────────────
 
-client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+def get_client():
+    return anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
 @app.route("/")
 def index():
@@ -343,7 +344,7 @@ def recreate_persona():
     )
 
     try:
-        response = client.messages.create(
+        response = get_client().messages.create(
             model=MODEL, max_tokens=120,
             messages=[{"role": "user", "content": prompt}]
         )
@@ -398,7 +399,7 @@ def think():
 
                 full_text = ""
                 try:
-                    with client.messages.stream(
+                    with get_client().messages.stream(
                         model=MODEL, max_tokens=350,
                         system=sys,
                         messages=[{"role": "user", "content": prompt}],
@@ -431,7 +432,7 @@ def judge_personas():
     def generate():
         try:
             full_text = ""
-            with client.messages.stream(
+            with get_client().messages.stream(
                 model=MODEL, max_tokens=1200,
                 system=JUDGE_SYSTEM,
                 messages=[{"role": "user", "content": prompt}],
