@@ -302,7 +302,7 @@ def _load_gdrive_creds():
 # ── Routes ─────────────────────────────────────────────────────────────────────
 
 def get_client():
-    return anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+    return anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
 
 @app.route("/")
 def index():
