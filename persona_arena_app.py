@@ -301,8 +301,7 @@ def _load_gdrive_creds():
 
 # ── Routes ─────────────────────────────────────────────────────────────────────
 
-def get_client():
-    return anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
 
 @app.route("/")
 def index():
@@ -344,7 +343,7 @@ def recreate_persona():
     )
 
     try:
-        response = get_client().messages.create(
+        response = client.messages.create(
             model=MODEL, max_tokens=120,
             messages=[{"role": "user", "content": prompt}]
         )
@@ -399,7 +398,7 @@ def think():
 
                 full_text = ""
                 try:
-                    with get_client().messages.stream(
+                    with client.messages.stream(
                         model=MODEL, max_tokens=350,
                         system=sys,
                         messages=[{"role": "user", "content": prompt}],
@@ -432,7 +431,7 @@ def judge_personas():
     def generate():
         try:
             full_text = ""
-            with get_client().messages.stream(
+            with client.messages.stream(
                 model=MODEL, max_tokens=1200,
                 system=JUDGE_SYSTEM,
                 messages=[{"role": "user", "content": prompt}],
@@ -2256,9 +2255,6 @@ def _launch_chrome(url):
 
 
 if __name__ == "__main__":
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        print("\n[!] WARNING: ANTHROPIC_API_KEY environment variable is not set.")
-        print("    Set it with:  set ANTHROPIC_API_KEY=your-key-here\n")
     port = int(os.environ.get("PORT", 5004))
     url  = f"http://localhost:{port}"
     print(f"[*] Starting Persona Arena on {url}")
